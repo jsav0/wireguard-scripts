@@ -37,8 +37,10 @@ PRIVATE_KEY_FILE=~/.config/wireguard/$INTFC-privkey
 
 # create new wireguard interface
 add_interface() {
-  VPN_IP="$3"
-  INTFC="$2"
+  VPN_IP="$2"
+  INTFC="$1"
+  echo $INTFC
+  echo $VPN_IP
   [ ! -f $PRIVATE_KEY_FILE ] && {
   	[ ! -d ~/.config/wireguard ] && mkdir -p ~/.config/wireguard
 	gen_key
@@ -76,7 +78,7 @@ add_peer() {
   usage 
 } || {
   [[ "$1" == "create" ]] && {
-    add_interface
+    add_interface "$2" "$3"
   } || { 
     [[ $1 == "remove-peer" ]] && {
       remove_peer
