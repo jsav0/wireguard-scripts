@@ -39,8 +39,6 @@ PRIVATE_KEY_FILE=~/.config/wireguard/$INTFC-privkey
 add_interface() {
   VPN_IP="$2"
   INTFC="$1"
-  echo $INTFC
-  echo $VPN_IP
   [ ! -f $PRIVATE_KEY_FILE ] && {
   	[ ! -d ~/.config/wireguard ] && mkdir -p ~/.config/wireguard
 	gen_key
@@ -67,30 +65,41 @@ remove_peer() {
 # add peer to interface
 add_peer() {
   INTFC="$1"
-  PUBKEY=$2
+  PUBKEY="$2"
   VPN_IP="$3"
   PUBLIC_IP="$4"
-  wg set $INTFC peer $PUBKEY allowed-ips $VPN_IP endpoint $PUBLIC_IP"
+  wg set $INTFC peer $PUBKEY allowed-ips $VPN_IP endpoint $PUBLIC_IP
 }
 
+case "$1" in 
+    create)         add_interface "$2" "$3"
+                    ;;
+    add-peer)       add_peer "$2" "$3" "$4" "$5"
+                    ;;
+    remove-peer)    remove_peer "$2" "$3"
+                    ;;
+    *)              usage
+                    ;;
+esac
 
-[ -z "$1" ] && {
-  usage 
-} || {
-  [[ "$1" == "create" ]] && {
-    add_interface "$2" "$3"
-  } || { 
-    [[ $1 == "remove-peer" ]] && {
-      remove_peer "$2" "$3"
-    } || {
-      [[ $1 == "add-peer" ]] && {
-        add_peer "$2" "$3" "$4" "$5"
-        } || {
-            echo "invalid args provided"
-        }
-    }
-  }
-}
-
+#[ -z "$1" ] && {
+#  usage 
+#} || {
+#  [[ "$1" == "create" ]] && {
+#    add_interface "$2" "$3"
+#  } || { 
+#    [[ $1 == "remove-peer" ]] && {
+#      remove_peer "$2" "$3"
+#    }
+#  } || {
+#    [[ $1 == "add-peer" ]] && {
+#      add_peer "$2" "$3" "$4" "$5"
+#    }
+#  } || {
+#      echo "invalid args provided"
+#  }
+#}
+#
+#
 
 
