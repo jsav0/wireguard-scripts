@@ -2,25 +2,43 @@
 #
 # n0
 # File: wgtunnel.sh
-# Description: creates a wireguard interface 
+# Description: Create wireguard tunnels and add/remove peers 
 # Written: jsavage [20200316]
 # a110w
 
 usage() {
 echo "
-USAGE: ./wgtunnel.sh <interface> <ip>
-  Creates a wireguard tunnel <interface> with <ip>
+USAGE: 
+  ./wgtunnel.sh [DOWHAT] [OPTIONS]
 
-EXAMPLE:
-  ./wgtunnel wg0 10.0.0.1 
+DOWHAT:
+  create            create wireguard interface
+  add-peer          add peer to wireguard interface
+  remove-peer       remove peer from wireguard interface
+
+OPTIONS:
+  <interface>       wireguard interface
+  <peer-pubkey>     peer public key
+  <peer-ip>         peer allowed-ip
+  <endpoint:port>   peer public IP:PORT
+
+EXAMPLES:
+  ./wgtunnel.sh create <interface> <ip>
+  ./wgtunnel.sh add-peer <interface> <peer-pubkey> <ip> <endpoint:port>
+  ./wgtunnel.sh remove-peer <interface> <peer-pubkey>
+
+  ./wgtunnel.sh create wg0 10.0.0.1 
+  ./wgtunnel.sh add-peer wg0 abcde123= 10.0.0.2/32 example.org:56072
+  ./wgtunnel.sh remove-peer wg0 abcde123=
 "
 }
 
-VPN_IP="$2"
-INTFC="$1"
 PRIVATE_KEY_FILE=~/.config/wireguard/$INTFC-privkey
 
-add_tunnel() {
+# create new wireguard interface
+add_interface() {
+  VPN_IP="$3"
+  INTFC="$2"
   [ ! -f $PRIVATE_KEY_FILE ] && {
   	[ ! -d ~/.config/wireguard ] && mkdir -p ~/.config/wireguard
 	gen_key
@@ -38,17 +56,36 @@ gen_key() {
   umask 0777 && wg genkey > $PRIVATE_KEY_FILE
 }
 
+# remove peer from interface
+remove_peer() {
+  wg set "$2" peer "$3" remove
+  wg show
+}
+
+# add peer to interface
+add_peer() {
+  INTFC="$2"
+  PUBKEY="$3"
+  VPN_IP="$4"
+  PUBLIC_IP="$5"
+  wg set $INTFC peer $KEY allowed-ips $VPN_IP endpoint $PUBLIC_IP 
+}
+
+
 [ -z "$1" ] && {
   usage 
 } || {
   [[ "$1" == "create" ]] && {
-    add_tunnel
+    add_interface
   } || { 
     [[ $1 == "remove-peer" ]] && {
-      wg set "$2" peer "$3" remove
-      wg show
+      remove_peer
     } || {
-      echo "invalid operation"
+      [[ $1 == "add-peer" ]] && {
+        add_peer
+        } || {
+            echo "invalid args provided"
+        }
     }
   }
 }
