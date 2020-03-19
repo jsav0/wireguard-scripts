@@ -67,10 +67,10 @@ remove_peer() {
 # add peer to interface
 add_peer() {
   INTFC="$1"
-  PUBKEY="$2"
+  PUBKEY=$2
   VPN_IP="$3"
   PUBLIC_IP="$4"
-  wg set $INTFC peer $KEY allowed-ips $VPN_IP endpoint $PUBLIC_IP 
+  wg set $INTFC peer $PUBKEY allowed-ips $VPN_IP endpoint $PUBLIC_IP"
 }
 
 
