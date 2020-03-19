@@ -1,22 +1,31 @@
 # wireguard-scripts
-basic wireguard configurations made even easier
+basic wireguard configuration made even easier
+
+** WIP / not finished **
 
 ### wgtunnel.sh - Create a wireguard interface
 ```
-USAGE: ./wgtunnel <interface> <ip>
-  Creates a wireguard tunnel <interface> with <ip>
+USAGE: 
+  ./wgtunnel.sh [DOWHAT] [OPTIONS]
 
-EXAMPLE:
-  ./wgtunnel wg0 10.0.0.1
+DOWHAT:
+  create            create wireguard interface
+  add-peer          add peer to wireguard interface
+  remove-peer       remove peer from wireguard interface
 
+OPTIONS:
+  <interface>       wireguard interface
+  <peer-pubkey>     peer public key
+  <peer-ip>         peer allowed-ip
+  <endpoint:port>   peer public IP:PORT
+
+EXAMPLES:
+  ./wgtunnel.sh create <interface> <ip>
+  ./wgtunnel.sh add-peer <interface> <peer-pubkey> <ip> <endpoint:port>
+  ./wgtunnel.sh remove-peer <interface> <peer-pubkey>
+
+  ./wgtunnel.sh create wg0 10.0.0.1 
+  ./wgtunnel.sh add-peer wg0 abcde123= 10.0.0.2/32 example.org:56072
+  ./wgtunnel.sh remove-peer wg0 abcde123=
 ```
 
-### wgaddpeer.sh - Add a peer to existing wireguard interface 
-```
-USAGE: ./wgaddpeer.sh <interface> <peer-pubkey> <ip> <endpoint/public-ip:port>
-  Adds a peer to existing wireguard interface
-
-EXAMPLE:
-  ./wgaddpeer.sh wg0 ABCDE= 10.0.0.2/32 96.30.192.235:56072
-
-```
