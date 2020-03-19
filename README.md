@@ -13,7 +13,7 @@ EXAMPLE:
 
 ### wgaddpeer.sh - Add a peer to existing wireguard interface 
 ```
-USAGE: ./wgaddpeer.sh <interface> <peer-pubkey> <ip> <public-ip:port>
+USAGE: ./wgaddpeer.sh <interface> <peer-pubkey> <ip> <endpoint/public-ip:port>
   Adds a peer to existing wireguard interface
 
 EXAMPLE:
