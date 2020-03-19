@@ -60,16 +60,16 @@ gen_key() {
 
 # remove peer from interface
 remove_peer() {
-  wg set "$2" peer "$3" remove
+  wg set "$1" peer "$2" remove
   wg show
 }
 
 # add peer to interface
 add_peer() {
-  INTFC="$2"
-  PUBKEY="$3"
-  VPN_IP="$4"
-  PUBLIC_IP="$5"
+  INTFC="$1"
+  PUBKEY="$2"
+  VPN_IP="$3"
+  PUBLIC_IP="$4"
   wg set $INTFC peer $KEY allowed-ips $VPN_IP endpoint $PUBLIC_IP 
 }
 
@@ -81,10 +81,10 @@ add_peer() {
     add_interface "$2" "$3"
   } || { 
     [[ $1 == "remove-peer" ]] && {
-      remove_peer
+      remove_peer "$2" "$3"
     } || {
       [[ $1 == "add-peer" ]] && {
-        add_peer
+        add_peer "$2" "$3" "$4" "$5"
         } || {
             echo "invalid args provided"
         }
