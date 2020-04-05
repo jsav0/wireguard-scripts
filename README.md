@@ -1,6 +1,4 @@
 ```
-usage() {
-echo "
 USAGE: 
   ./wgc.sh [DOWHAT] [OPTIONS]
 
