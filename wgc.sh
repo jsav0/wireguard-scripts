@@ -6,7 +6,7 @@
 # Written: jsavage [20200316]
 # a110w
 
-SERVER_PUBLIC_IP=96.30.192.235
+SERVER_PUBLIC_IP="example.com"
 
 usage() {
 echo "WireGuardConfigure:
