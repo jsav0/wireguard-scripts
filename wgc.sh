@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # n0
-# File: wgtunnel.sh
+# File: wgc.sh
 # Description: Create wireguard tunnels and add/remove peers 
 # Written: jsavage [20200316]
 # a110w
@@ -9,7 +9,7 @@
 usage() {
 echo "
 USAGE: 
-  ./wgtunnel.sh [DOWHAT] [OPTIONS]
+  ./wgc.sh [DOWHAT] [OPTIONS]
 
 DOWHAT:
   create            create wireguard interface
@@ -23,37 +23,36 @@ OPTIONS:
   <endpoint:port>   peer public IP:PORT
 
 EXAMPLES:
-  ./wgtunnel.sh create <interface> <ip>
-  ./wgtunnel.sh add-peer <interface> <peer-pubkey> <ip> <endpoint:port>
-  ./wgtunnel.sh remove-peer <interface> <peer-pubkey>
+  ./wgc.sh create <interface> <ip>
+  ./wgc.sh add-peer <interface> <peer-pubkey> <ip> <endpoint:port>
+  ./wgc.sh remove-peer <interface> <peer-pubkey>
 
-  ./wgtunnel.sh create wg0 10.0.0.1 
-  ./wgtunnel.sh add-peer wg0 abcde123= 10.0.0.2/32 example.org:56072
-  ./wgtunnel.sh remove-peer wg0 abcde123=
+  ./wgc.sh create wg0 10.0.0.1 
+  ./wgc.sh add-peer wg0 abcde123= 10.0.0.2/32 example.org:56072
+  ./wgc.sh remove-peer wg0 abcde123=
 "
 }
-
-PRIVATE_KEY_FILE=~/.config/wireguard/$INTFC-privkey
 
 # create new wireguard interface
 add_interface() {
   VPN_IP="$2"
   INTFC="$1"
-  [ ! -f $PRIVATE_KEY_FILE ] && {
-  	[ ! -d ~/.config/wireguard ] && mkdir -p ~/.config/wireguard
-	gen_key
+  SERVER_PRIVKEY=~/.config/wireguard/$INTFC-privkey
+  SERVER_PUBKEY=~/.config/wireguard/$INTFC-pubkey
+  [ ! -f $SERVER_PRIVKEY ] && {
+	mkdir -p ~/.config/wireguard
+  	gen_key
   }
   ip link add $INTFC type wireguard 
   ip addr add $VPN_IP dev $INTFC
-  wg set $INTFC private-key $PRIVATE_KEY_FILE
+  wg set $INTFC private-key $SERVER_PRIVKEY
   ip link set $INTFC up
   wg show $INTFC
-
 }
 
-# generate private key for interface
+# generate keys for interface
 gen_key() {
-  umask 0777 && wg genkey > $PRIVATE_KEY_FILE
+  umask 0777 && wg genkey | tee $SERVER_PRIVKEY | wg pubkey > $SERVER_PUBKEY
 }
 
 # remove peer from interface
@@ -81,25 +80,5 @@ case "$1" in
     *)              usage
                     ;;
 esac
-
-#[ -z "$1" ] && {
-#  usage 
-#} || {
-#  [[ "$1" == "create" ]] && {
-#    add_interface "$2" "$3"
-#  } || { 
-#    [[ $1 == "remove-peer" ]] && {
-#      remove_peer "$2" "$3"
-#    }
-#  } || {
-#    [[ $1 == "add-peer" ]] && {
-#      add_peer "$2" "$3" "$4" "$5"
-#    }
-#  } || {
-#      echo "invalid args provided"
-#  }
-#}
-#
-#
 
 
