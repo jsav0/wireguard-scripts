@@ -6,7 +6,7 @@
 # Written: jsavage [20200316]
 # a110w
 
-SERVER_PUBLIC_IP="example.com"
+SERVER_PUBLIC_IP="104.139.42.88"
 
 usage() {
 echo "WireGuardConfigure:
@@ -14,7 +14,7 @@ USAGE:
   ./wgc.sh [DOWHAT] [OPTIONS]
 
 DOWHAT:
-  create	create wireguard interface
+  create	create wireguard interface (server config)
   add-peer	create/add peer and generate client config
   remove-peer	remove peer from wireguard interface
 
@@ -36,7 +36,7 @@ OPTIONS:
 
 # create new wireguard interface
 add_interface() {
-  VPN_IP="$2"
+#  VPN_IP="$2"
   INTFC="$1"
   SERVER_PRIVKEY=~/.config/wireguard/$INTFC-privkey
   SERVER_PUBKEY=~/.config/wireguard/$INTFC-pubkey
@@ -44,11 +44,13 @@ add_interface() {
 	mkdir -p ~/.config/wireguard
   	gen_server_keys
   }
-  ip link add $INTFC type wireguard 
-  ip addr add $VPN_IP dev $INTFC
-  wg set $INTFC private-key $SERVER_PRIVKEY
-  ip link set $INTFC up
-  wg show $INTFC
+cat templates/server.conf | sed 's|:SERVER_PRIVKEY:|'"$(cat $SERVER_PRIVKEY)"'|' > /etc/wireguard/"$INTFC".conf
+  wg-quick up "$INTFC"
+#  ip link add $INTFC type wireguard 
+#  ip addr add $VPN_IP dev $INTFC
+#  wg set $INTFC private-key $SERVER_PRIVKEY
+#  ip link set $INTFC up
+#  wg show $INTFC
 }
 
 # generate keys for interface
