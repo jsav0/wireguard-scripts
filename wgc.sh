@@ -71,7 +71,6 @@ add_client_peer() {
 generate_client_keys() {
 	NAME="$1"
 	wg genkey | tee clients/$NAME/$NAME.privkey | wg pubkey > clients/$NAME/$NAME.pubkey
-	echo "what is going on"
 }
 
 create_client_config() {
