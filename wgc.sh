@@ -79,7 +79,7 @@ create_client_config() {
 	generate_client_keys $NAME || echo "error: could not generate keys"
 	key=$(cat clients/$NAME/$NAME.privkey) 
 	get_next_ip	
-	cat templates/client.conf | sed 's/:CLIENT_IP:/'"$ip"'/;s|:CLIENT_KEY:|'"$key"'|;s|:SERVER_PUB_KEY:|'"$(cat SERVER_PUBKEY)"'|;s|:SERVER_ADDRESS:|'"$SERVER_PUBLIC_IP"'|' > clients/$1/$1.conf
+	cat templates/client.conf | sed 's/:CLIENT_IP:/'"$ip"'/;s|:CLIENT_KEY:|'"$key"'|;s|:SERVER_PUB_KEY:|'"$SERVER_PUBKEY"'|;s|:SERVER_ADDRESS:|'"$SERVER_PUBLIC_IP"'|' > clients/$1/$1.conf
 	tar czf clients/$NAME.tar.gz clients/$NAME
 }
 
