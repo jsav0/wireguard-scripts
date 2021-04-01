@@ -26,3 +26,35 @@ This script was heavily influenced by the following:
 - <https://github.com/davidgross/wireguard-scripts>
 - <https://www.wireguard.com/quickstart/>
 - <https://www.wireguard.com/install/>
+
+
+---
+
+## Basic usage
+
+Download
+```
+git clone git://wfnintr.net/wireguard-scripts
+```
+
+1. create the server interface
+```
+./wgc create wg0
+```
+
+2. create a config for a client on the interface, name it whatever you want
+```
+./wgc add-peer wg0 iphone
+./wgc add-peer wg0 thinkpadx220
+./wgc add-peer wg0 thinkpadx230
+```
+
+3. export/import the config `client/<name>.conf` to your client
+You will need to tweak the client config before using, adding the ipv4 server address, until it's added to the script
+
+
+
+Note: You can generate a QR code of the client config like so:
+```
+qrencode -t ansiutf8 -r iphone.conf
+```
